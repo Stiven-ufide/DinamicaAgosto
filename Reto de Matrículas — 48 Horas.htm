@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reto de Matrículas — 48 Horas</title>
+<style>
+:root{--blue:#000f9f;--yellow:#ffd600;--cyan:#00b2e3;--magenta:#e31d93;--purple:#510c76;--bg:#f4f7fb;--text:#182033;--muted:#6b7280;--green:#16a34a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;padding:28px 18px;text-align:center}
+header h1{margin:0;font-size:clamp(25px,5vw,42px)}header p{margin:8px 0 0;font-weight:700}
+.container{max-width:1100px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 5px 20px #00000010}
+.stat{font-size:32px;font-weight:800;color:var(--blue)}.label{color:var(--muted);font-size:13px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.controls button,.add button{border:0;border-radius:10px;padding:10px 15px;font-weight:700;cursor:pointer}
+.primary{background:var(--blue);color:white}.danger{background:#fee2e2;color:#991b1b}.yellow{background:var(--yellow)}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 5px 20px #00000010}
+th{background:var(--blue);color:#fff;padding:13px;text-align:left}td{padding:13px;border-bottom:1px solid #edf0f5}tr:last-child td{border:0}
+.rank{font-size:22px;font-weight:900}.name{font-weight:800}.score{font-size:24px;font-weight:900;color:var(--blue)}
+.actions{display:flex;gap:6px;align-items:center}.actions button{border:0;width:34px;height:34px;border-radius:9px;font-size:18px;font-weight:800;cursor:pointer}
+.plus{background:#dbeafe;color:var(--blue)}.minus{background:#fee2e2;color:#991b1b}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#ecfdf5;color:#166534;font-weight:700;font-size:12px}
+.winner{border:3px solid var(--yellow);background:linear-gradient(90deg,#fffdf0,#fff)}
+.add{display:flex;gap:8px;margin-top:14px}.add input{flex:1;padding:11px;border:1px solid #d6dbe5;border-radius:10px}
+.notice{background:#fff7cc;border-left:5px solid var(--yellow);padding:14px;border-radius:10px;margin:18px 0}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.container{padding:12px}th:nth-child(3),td:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>🏆 RETO DE MATRÍCULAS — 48 HORAS</h1>
+<p>13 y 14 de agosto 2026 · 6 asesores · 1 solo campeón</p>
+</header>
+<div class="container">
+<div class="grid">
+<div class="card"><div class="stat" id="total">5</div><div class="label">Matrículas totales</div></div>
+<div class="card"><div class="stat" id="leader">Steven Garcia</div><div class="label">Líder actual</div></div>
+<div class="card"><div class="stat" id="days">48h</div><div class="label">Duración del reto</div></div>
+</div>
+
+<div class="notice"><b>Regla:</b> 1 matrícula efectiva y validada = 1 
+punto. Gana quien tenga más matrículas al cierre del 14 de agosto. Si 
+hay empate: primero se compara el resultado del 14 de agosto y luego la 
+hora de la última matrícula válida.</div>
+
+<div class="controls">
+<button class="primary" onclick="addOneToLeader()">⚡ +1 al líder</button>
+<button class="yellow" onclick="resetScores()">↺ Reiniciar marcador</button>
+</div>
+
+<table>
+<thead><tr><th>#</th><th>Asesor</th><th>Estado</th><th>Matrículas</th><th>Acción</th></tr></thead>
+<tbody id="board">
+ <tr class="winner">
+ <td class="rank">1</td><td class="name">Steven Garcia</td>
+ <td><span class="badge">👑 LÍDER</span></td>
+ <td class="score">2</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(0,-1)">−</button>
+ <button class="plus" onclick="change(0,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">2</td><td class="name">Daniel Vargas</td>
+ <td>En competencia</td>
+ <td class="score">1</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(1,-1)">−</button>
+ <button class="plus" onclick="change(1,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">3</td><td class="name">Eugenia Chaves</td>
+ <td>En competencia</td>
+ <td class="score">1</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(2,-1)">−</button>
+ <button class="plus" onclick="change(2,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">4</td><td class="name">Valeria Amador</td>
+ <td>En competencia</td>
+ <td class="score">1</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(3,-1)">−</button>
+ <button class="plus" onclick="change(3,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">5</td><td class="name">Adeny Delgado Alvarado</td>
+ <td>En competencia</td>
+ <td class="score">0</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(4,-1)">−</button>
+ <button class="plus" onclick="change(4,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">6</td><td class="name">Andreina Medrano Vargas</td>
+ <td>En competencia</td>
+ <td class="score">0</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(5,-1)">−</button>
+ <button class="plus" onclick="change(5,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">7</td><td class="name">Christopher Briceño Arias</td>
+ <td>En competencia</td>
+ <td class="score">0</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(6,-1)">−</button>
+ <button class="plus" onclick="change(6,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">8</td><td class="name">Elmer Chavarria</td>
+ <td>En competencia</td>
+ <td class="score">0</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(7,-1)">−</button>
+ <button class="plus" onclick="change(7,1)">+</button>
+ </div></td></tr>
+ <tr class="">
+ <td class="rank">9</td><td class="name">Valeria Jimenez</td>
+ <td>En competencia</td>
+ <td class="score">0</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(8,-1)">−</button>
+ <button class="plus" onclick="change(8,1)">+</button>
+ </div></td></tr></tbody>
+</table>
+
+<div class="card" style="margin-top:18px">
+<h3>➕ Agregar participante</h3>
+<div class="add"><input id="newName" placeholder="Nombre del asesor"><button class="primary" onclick="addParticipant()">Agregar</button></div>
+</div>
+</div>
+
+<script>
+const defaultNames=["Daniel Vargas","Valeria Amador","Elmer Chavarria","Adeny Delgado Alvarado","Christopher Briceño Arias","Andreina Medrano Vargas"];
+let data=JSON.parse(localStorage.getItem("reto48h")||"null")||defaultNames.map(n=>({name:n,score:0}));
+function save(){localStorage.setItem("reto48h",JSON.stringify(data));render()}
+function render(){
+ data.sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
+ const total=data.reduce((s,x)=>s+x.score,0), leader=data[0]?.name||"—";
+ document.getElementById("total").textContent=total;
+ document.getElementById("leader").textContent=leader;
+ document.getElementById("board").innerHTML=data.map((x,i)=>`
+ <tr class="${i===0&&x.score>0?'winner':''}">
+ <td class="rank">${i+1}</td><td class="name">${esc(x.name)}</td>
+ <td>${i===0&&x.score>0?'<span class="badge">👑 LÍDER</span>':'En competencia'}</td>
+ <td class="score">${x.score}</td>
+ <td><div class="actions">
+ <button class="minus" onclick="change(${i},-1)">−</button>
+ <button class="plus" onclick="change(${i},1)">+</button>
+ </div></td></tr>`).join("");
+}
+function change(i,n){data[i].score=Math.max(0,data[i].score+n);save()}
+function addOneToLeader(){if(data.length){data.sort((a,b)=>b.score-a.score);data[0].score++;save()}}
+function resetScores(){if(confirm("¿Reiniciar todas las matrículas a 0?")){data.forEach(x=>x.score=0);save()}}
+function addParticipant(){let n=document.getElementById("newName").value.trim();if(!n)return;data.push({name:n,score:0});document.getElementById("newName").value="";save()}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+render();
+</script>
+
+</body></html>
